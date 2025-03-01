@@ -1,4 +1,7 @@
 /// <reference path="./global.d.ts" />
+
+import { NotAvailable } from "./errors";
+
 // @ts-check
 //
 // The lines above enable type checking for this file. Various IDEs interpret
@@ -27,7 +30,12 @@ export class TranslationService {
    * @returns {Promise<string>}
    */
   free(text) {
-    throw new Error('Implement the free function');
+    return new Promise((resolve, reject) => {
+      this.api
+        .fetch(text)
+        .then((translation) => resolve(translation.translation))
+        .catch(reject);
+    });
   }
 
   /**
@@ -41,7 +49,14 @@ export class TranslationService {
    * @returns {Promise<string[]>}
    */
   batch(texts) {
-    throw new Error('Implement the batch function');
+    if (texts.length === 0) return Promise.reject(new BatchIsEmpty());
+    return Promise.all(
+      texts.map(text =>
+        Promise.resolve()
+          .then(() => this.free(text))
+          .catch(error => Promise.reject(error))
+      )
+    );
   }
 
   /**
@@ -54,7 +69,19 @@ export class TranslationService {
    * @returns {Promise<void>}
    */
   request(text) {
-    throw new Error('Implement the request function');
+    let attempts = 0;
+    return new Promise((resolve, reject) => {
+      const execute = () => {
+        this.api.request(text, (error) => {
+          if (error) {
+            attempts++;
+            if (attempts < 3) execute();
+            else reject(error);
+          } else resolve(undefined);
+        });
+      };
+      execute();
+    });
   }
 
   /**
@@ -68,7 +95,20 @@ export class TranslationService {
    * @returns {Promise<string>}
    */
   premium(text, minimumQuality) {
-    throw new Error('Implement the premium function');
+    const evaluateResult = (result) => {
+      if (result.quality >= minimumQuality) return result.translation;
+      throw new QualityThresholdNotMet(text);
+    };
+    return this.api.fetch(text)
+      .then(evaluateResult)
+      .catch((error) => {
+        if (error instanceof NotAvailable) {
+          return this.request(text)
+            .then(() => this.api.fetch(text))
+            .then(evaluateResult);
+        }
+        throw error;
+      });
   }
 }
 
