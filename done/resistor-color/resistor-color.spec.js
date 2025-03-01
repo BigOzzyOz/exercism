@@ -1,4 +1,4 @@
-import { describe, expect, test, xtest } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 import { colorCode, COLORS } from './resistor-color';
 
 describe('ResistorColor', () => {
@@ -7,16 +7,16 @@ describe('ResistorColor', () => {
       expect(colorCode('black')).toEqual(0);
     });
 
-    xtest('White', () => {
+    test('White', () => {
       expect(colorCode('white')).toEqual(9);
     });
 
-    xtest('Orange', () => {
+    test('Orange', () => {
       expect(colorCode('orange')).toEqual(3);
     });
   });
 
-  xtest('Colors', () => {
+  test('Colors', () => {
     expect(COLORS).toEqual([
       'black',
       'brown',
