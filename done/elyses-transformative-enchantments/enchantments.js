@@ -8,18 +8,18 @@
  * @returns {number[]} deck with every card doubled
  */
 export function seeingDouble(deck) {
-  throw new Error('Implement the seeingDouble function');
+  return deck.map((card) => card * 2);
 }
 
 /**
- *  Creates triplicates of every 3 found in the deck.
+ * Creates triplicates of every 3 found in the deck.
  *
  * @param {number[]} deck
  *
  * @returns {number[]} deck with triplicate 3s
  */
 export function threeOfEachThree(deck) {
-  throw new Error('Implement the threeOfEachThree function');
+  return deck.flatMap(card => card === 3 ? [3, 3, 3] : [card]);
 }
 
 /**
@@ -31,7 +31,8 @@ export function threeOfEachThree(deck) {
  * @returns {number[]} deck with only two middle cards
  */
 export function middleTwo(deck) {
-  throw new Error('Implement the middleTwo function');
+  let start = Number(((deck.length - 2) / 2).toFixed(0));
+  return deck.slice(start, start + 2);
 }
 
 /**
@@ -43,8 +44,16 @@ export function middleTwo(deck) {
  */
 
 export function sandwichTrick(deck) {
-  throw new Error('Implement the sandwichTrick function');
+  if (deck.length > 2) {
+    const [first, ...middle] = deck;
+    const last = middle.pop();
+    middle.splice(middle.length / 2, 0, last, first);
+    return middle;
+  } else {
+    return deck.reverse();
+  }
 }
+
 
 /**
  * Removes every card from the deck except 2s.
@@ -54,7 +63,7 @@ export function sandwichTrick(deck) {
  * @returns {number[]} deck with only 2s
  */
 export function twoIsSpecial(deck) {
-  throw new Error('Implement the twoIsSpecial function');
+  return deck.filter(card => card === 2);
 }
 
 /**
@@ -65,7 +74,7 @@ export function twoIsSpecial(deck) {
  * @returns {number[]} ordered deck
  */
 export function perfectlyOrdered(deck) {
-  throw new Error('Implement the perfectlyOrdered function');
+  return deck.sort((a, b) => a - b);
 }
 
 /**
@@ -76,5 +85,5 @@ export function perfectlyOrdered(deck) {
  * @returns {number[]} reordered deck
  */
 export function reorder(deck) {
-  throw new Error('Implement the reorder function');
+  return deck.reverse();
 }
